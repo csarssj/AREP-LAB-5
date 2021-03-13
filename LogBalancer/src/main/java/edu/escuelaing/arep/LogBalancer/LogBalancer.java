@@ -16,34 +16,40 @@ public class LogBalancer{
     public static void main(String... args){
         port(getPort());
         get ("hello", (req,res) -> "Hello Docker!");
-        post("/",(req,res) -> inputDataPage(req, res));
+        get("/",(req,res) -> inputDataPage(req, res));
         get("/result",(req,res)-> resultDataPage(req,res));
     }
-    
+
     /**
-     * Pagina de inicio donde se ingresan los datos ha calcular
-     * @param req Tiene la informacion de la petición.
-     * @param res Tiene la información con la respuesta del servidor.
-     * @return String que contiene el codigo generado del HTML
+     * Metodo que agrega un nuevo mensaje a la base de datos
+     * @param req el request que realiza el cliente
+     * @param res la respuesta que se le da al cliente
+     * @return la vista de todos los datos en las base de datos
      */
     private static String inputDataPage(spark.Request req, spark.Response res) {
+    	mongo.addData(req.queryParams("mensaje"));
+    	System.out.println(req.queryParams("mensaje"));
         String pageContent
-                = "";
+                = resultDataPage(req,res);
         return pageContent;
     }
     /**
-     * Pagina de inicio donde se ingresan los datos ha calcular
-     * @param req Tiene la informacion de la petición.
-     * @param res Tiene la información con la respuesta del servidor.
-     * @return String que contiene el codigo generado del HTML
+     * Metodo que conecta con la base de datos y extrae sus datos
+     * @param req el request que realiza el cliente
+     * @param res la respuesta que se le da al cliente
+     * @return Datos obtenidos de la base de datos
      */
     private static String resultDataPage(spark.Request req, spark.Response res) {
-        mongo.addData("holarpueba");
+    	mongo.addData("prueba");
     	String pageContent = mongo.getData();
     	System.out.print(pageContent);
         return pageContent;
     }
-
+    
+    /**
+     * Metodo que retorna el puerto por el que se va a ejecutar el servicio
+     * @return el puerto por el que corre el servicio
+     */
     private static int getPort() {
         if (System.getenv("PORT") != null) {
             return Integer.parseInt(System.getenv("PORT"));
