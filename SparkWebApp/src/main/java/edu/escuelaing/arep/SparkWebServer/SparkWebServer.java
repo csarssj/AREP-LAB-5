@@ -1,10 +1,11 @@
 package edu.escuelaing.arep.SparkWebServer;
 
 import static spark.Spark.*;
+import spark.Response;
+import spark.Request;
+import java.io.IOException;
 
 
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Ceseg
@@ -12,30 +13,87 @@ import okhttp3.Response;
  */
 public class SparkWebServer
 {
+	private static HTTPClient client = new HTTPClient();
     public static void main(String... args){
-    	HTTPClient client = new HTTPClient();
+    	if(client==null){
+    		System.out.println("no creado we");
+    	}else {
+    		System.out.println("creado cliente");
+    	}
         port(getPort());
         get ("hello", (req,res) -> "Hello Docker!");
-        get("/",(req,res) -> inputDataPage(req, res));
+        post("/result",(req,res) -> inputDataPage(req, res));
+        get("/result",(req,res)-> resultDataPage(req,res));
 
     }
     
     /**
-     * Pagina de inicio donde se ingresan los datos ha calcular
-     * @param req Tiene la informacion de la petición.
-     * @param res Tiene la información con la respuesta del servidor.
-     * @return String que contiene el codigo generado del HTML
+     * Encargado de retornar datos de mongo
+     * @param req request 
+     * @param res response
+     * @return datos 
      */
-    private static String inputDataPage(spark.Request req, spark.Response res) {
+    private static String inputDataPage(Request req,Response res) throws IOException {
+    	client.postMessage(req.body());
+    	System.out.println(req.body());
+    	System.out.println(req.queryParams("mensaje"));
         String pageContent
-                = "";
+                =resultDataPage(req,res);
+    	client.roundRobin();
         return pageContent;
     }
-
+    
+    /**
+     * Encargado de agregar data a la base de datos
+     * @param req request
+     * @param res response
+     * @return datos
+     */
+    private static String resultDataPage(Request req, Response res) throws IOException {
+    	String datos = client.getMessages();
+        String pageContent
+                = "<!DOCTYPE html>"
+                        + "<html>"
+                        + "<head>"
+                        + "<style>"
+                        + "body {text-align: center;"
+                        + " font-family: \"new century schoolbook\";}"
+                        + "h2 {text-align: center;}"
+                        + "table {text-align: center;}"
+                        + "a {text-align: center;}"
+                        + "div {text-align: center;}"
+                        + "form action {text-align: center;}"
+                        + "</style>"
+                        + "</head>"
+                        +"<title>LogBalancer</title>"
+                        + "<h2 text-aling =\"center\">Recopilador de datos </h2>"
+                        + "<form method=\"post\" action=\"/result\">"
+                        + "  Ingresa mensaje:<br>"
+                        + "  <input type=\"text\" name=\"mensaje\">"
+                        + "  <br>"
+                        + "  <input type=\"submit\" value=\"Submit\">"
+                        + "</form>"
+                        + "<body style=\"background-color:powderblue;\">"
+                        +"<table style="+"width:100%"+">"
+                        +"<tr>"
+                        +"<th>mensaje</th>"
+                        +"<th>Fecha</th>"
+                        +"</tr>"
+                        + datos
+                        +"</table>"
+                        + "</body>"
+                        + "</html>";
+    	client.roundRobin();
+        return pageContent;
+    }
+    /**
+     * Puerto por el que se ejecuta la app
+     * @return puerto
+     */
     private static int getPort() {
         if (System.getenv("PORT") != null) {
             return Integer.parseInt(System.getenv("PORT"));
         }
-        return 4567;
+        return 8000;
     }
 }

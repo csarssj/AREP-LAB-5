@@ -21,34 +21,39 @@ public class BDConection {
 	private MongoClientURI uri;
     private MongoClient mongoClient;
     private MongoDatabase mongodb;
-    private MongoCollection collection;
 
     /**
      * Conexion a la base de datos
      */
     public BDConection() {
-        uri = new MongoClientURI("mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false");
-        		//mongodb+srv://admin:<password>@cluster0.4ocja.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
-        		//mongodb://admin:admin123@database-arep:27017/?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=database&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=database
+        uri = new MongoClientURI("mongodb://admin:12345@cluster0-shard-00-00.vj1np.mongodb.net:27017,cluster0-shard-00-01.vj1np.mongodb.net:27017,cluster0-shard-00-02.vj1np.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-56f0pa-shard-0&authSource=admin&retryWrites=true&w=majority");
         mongoClient = new MongoClient(uri);
         mongodb = mongoClient.getDatabase("LAB5-AREP");
-        collection = mongodb.getCollection("lab5arep");
 
     }
+    /**
+     * Agrega un dato a la base de datos
+     * @param mensaje
+     */
     public void addData(String mensaje) {
+    	MongoCollection<Document> collection = mongodb.getCollection("lab5arep");
     	Document object = new Document();
         object.append("mensaje",mensaje);
         object.append("fecha", new Date().toString());
         collection.insertOne(object);
     }
+    /**
+     * Obtiene los datos de mongo
+     * @return data
+     */
     public String getData() {
+    	MongoCollection<Document> collection = mongodb.getCollection("lab5arep");
         String mensaje = "";
         FindIterable<Document> iterDoc = collection.find();
-        ArrayList<String> doc = new ArrayList<String>();
         for(Document d : iterDoc){
-            mensaje += "{mensaje: "+d.get("mensaje").toString() +", fecha: " +d.get("fecha").toString()+"}";
-            doc.add(mensaje);
+            mensaje += "<tr><td>" + d.get("mensaje").toString() + "</td><td>" + d.get("fecha").toString() + "</td></tr>";
         }
+        System.out.println(mensaje);
         return mensaje;
     } 
     
