@@ -27,15 +27,11 @@ mvn javadoc:javadoc
 Ejecutando el siquiente comando en la consola y accediendo al siguiente link se puede visualizar una prueba.
 
 ```
-java -cp target/classes edu.escuelaing.arep.nanoSpring.App edu.escuelaing.arep.nanoSpring.HelloController
+java -cp target/classes;target/dependency/* edu.escuelaing.arep.SparkWebServer.SparkWebServer
 
 
 ```
-o ingresando a través de este link desplegado en heroku:
 
-[heroku](https://secure-reaches-84671.herokuapp.com/example.html)
-
-![image](https://github.com/csarssj/ARSW-4-Servidor-Web/blob/master/img/prueba.png)
 
 ### Prerequisitos
 
@@ -52,7 +48,47 @@ El sistema, mas alla de facilitar el registro de las iniciativas e ideas de proy
 
 ### Reporte de pruebas
 
+Construir la imagen con el siguiente comando:
 
+```
+  docker build --tag logservice .
+  
+```
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/configlog.jpg)
+
+Se crean las tres instancias con el siguiente comando:
+
+
+```
+docker run -d -p 35001:6000 --name firstdockercontainer logbalancer
+docker run -d -p 35002:6000 --name firstdockercontainer2 logbalancer
+docker run -d -p 35003:6000 --name firstdockercontainer3 logbalancer
+  
+```
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/configlog2.jpg)
+
+Se realiza el mismo proceso para el sparkwebserver:
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/configlog3.jpg)
+
+Se confirma en la app de docker:
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/images.jpg)
+
+Se realizan las pruebas de manera local:
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/localhostprueba2.jpg)
+
+Tambien con postman
+
+(https://github.com/csarssj/AREP-LAB-5/blob/main/img/localhostprueba3.jpg)
+
+Se realiza una peticion post desde el robinround al log service y se comprueba que funciona:
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/docker1.jpg)
+
+![image](https://github.com/csarssj/AREP-LAB-5/blob/main/img/docker2.jpg)
 
 ## Construido en
 
@@ -61,7 +97,7 @@ El sistema, mas alla de facilitar el registro de las iniciativas e ideas de proy
 
 ## Integración continua
 
-[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://app.circleci.com/pipelines/github/csarssj/AREP-LAB-3)
+[![CircleCI](https://circleci.com/gh/circleci/circleci-docs.svg?style=svg)](https://app.circleci.com/pipelines/github/csarssj/AREP-LAB-5)
 
 ## Control de versiones 
 
